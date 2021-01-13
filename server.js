@@ -10,7 +10,7 @@ const { Pool } = require('pg');
 const app = express();
 const server = http.createServer(app);
 const io = socketIO(server);
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3333;
 
 app.use(history({
   disableDotRule: false,
