@@ -74,7 +74,7 @@ export default class Whiteborb extends Vue {
   private maxNewImageWidth = 360;
 
   get isProduction() {
-    return window.location.hostname.indexOf("whiteborb") > -1;
+    return window.location.hostname.indexOf("wb") > -1;
   }
 
   get urlForSocket() {
