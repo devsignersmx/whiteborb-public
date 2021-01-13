@@ -1,45 +1,51 @@
 <template>
   <div class="component menu">
     <template v-for="(toolName, index) in toolNames">
-      <div 
-        class="menu-item" 
-        :key="index" 
+      <div
+        v-if="toolName !== tools.Rooms"
+        class="menu-item"
+        :key="index"
         @click="clickedTool(toolName)"
         :class="{ selected: toolSelected === toolName }"
         :style="`z-index: ${100 - index};`"
       >
-        <div 
-          class="menu-icon"           
+        <div
+          class="menu-icon"
           :class="[toolName, { 
             selected: toolSelected === toolName, 
           }]"
         >
-          <div 
-            v-if="toolName === tools.StrokeColor" 
+          <div
+            v-if="toolName === tools.StrokeColor"
             class="color-picker stroke"
             :style="`border: 4px ${strokeColor} solid;`"
           ></div>
 
-          <div 
-            v-if="toolName === tools.FillColor" 
+          <div
+            v-if="toolName === tools.FillColor"
             class="color-picker fill"
             :style="`background-color: ${fillColor};`"
           ></div>
 
-          <div 
+          <div
             v-if="toolName === tools.Stroke"
-            class="stroke-line" :style="`height: ${strokeWidth * 1.2}px;`"
+            class="stroke-line"
+            :style="`height: ${strokeWidth * 1.2}px;`"
           ></div>
 
           <template v-if="toolName === tools.Image">
-            <input type="file" id="imgLoader" style="display:none">
+            <input
+              type="file"
+              id="imgLoader"
+              style="display:none"
+            >
           </template>
         </div>
 
         <p class="tool-name">{{ toolNameMap[toolName] }}</p>
 
-        <div 
-          class="submenu" 
+        <div
+          class="submenu"
           :class="[toolName, { 
             open: selectorOpen && 
               toolSelected === toolName && 
@@ -48,38 +54,52 @@
           @click.stop="() => {}"
           :key="index"
         >
-          <div 
+          <div
             v-if="toolsWithDropdown.includes(toolName)"
             class="submenu-content"
             :class="[toolName, { 
               open: selectorOpen && toolSelected === toolName
-            }]">
+            }]"
+          >
             <template v-if="toolName === tools.Rooms">
-              <p class="menu-text">Join/create room: </p>
+              <!-- <p class="menu-text">Join/create room: </p>
               <input type="text" v-model="potentialRoomName"/>
-              <button @click="goToRoom">Go</button>
+              <button @click="goToRoom">Go</button> -->
             </template>
 
             <template v-else-if="toolName === tools.StrokeColor || toolName === tools.FillColor">
-              <color-picker :value="colors" @input="updateColor"></color-picker>
+              <color-picker
+                :value="colors"
+                @input="updateColor"
+              ></color-picker>
             </template>
 
-            <template 
-              v-else-if="toolName === tools.Stroke" 
+            <template
+              v-else-if="toolName === tools.Stroke"
               v-for="(size, index) in strokeWidths"
             >
-                <div class="menu-item" @click="changeStrokeWidth(size)" :key="index">
-                  <div class="stroke-line" :style="`height: ${size * 1.2}px;`"></div>
-                </div>
+              <div
+                class="menu-item"
+                @click="changeStrokeWidth(size)"
+                :key="index"
+              >
+                <div
+                  class="stroke-line"
+                  :style="`height: ${size * 1.2}px;`"
+                ></div>
+              </div>
             </template>
 
-            <template 
+            <template
               v-else-if="toolName === tools.Select"
               v-for="(clipToolName, index) in clipToolNames"
             >
-              <div class="menu-item" :key="index">
-                <div 
-                  class="menu-icon" 
+              <div
+                class="menu-item"
+                :key="index"
+              >
+                <div
+                  class="menu-icon"
                   :class="clipToolName"
                   @click="clickedClipTool(clipToolName)"
                 >
@@ -90,9 +110,9 @@
             </template>
 
             <template v-else-if="toolName === tools.Math && !isMobile">
-              <a 
-                class="menu-text math-instructions" 
-                href="https://mathlive.io/reference_shortcuts.html" 
+              <a
+                class="menu-text math-instructions"
+                href="https://mathlive.io/reference_shortcuts.html"
                 target="_blank"
               >
                 How to use math typing
@@ -100,10 +120,8 @@
             </template>
 
             <template v-else-if="toolName === tools.Polygon">
-              <p 
-                class="menu-text"
-              >
-              {{ 
+              <p class="menu-text">
+                {{ 
                 isMobile 
                   ? 'Tap to add a point, long press to finish' 
                   : 'Click to add a point, double click to finish' 
@@ -118,13 +136,13 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop } from 'vue-property-decorator';
-import { Compact } from 'vue-color';
-import { Tools, ClipTools } from '../types';
+import { Component, Vue, Prop } from "vue-property-decorator";
+import { Compact } from "vue-color";
+import { Tools, ClipTools } from "../types";
 
 @Component({
   components: {
-    'color-picker': Compact
+    "color-picker": Compact,
   },
 })
 export default class Menu extends Vue {
@@ -142,33 +160,33 @@ export default class Menu extends Vue {
     Tools.Math,
     Tools.Select,
     Tools.Polygon,
-    Tools.Rooms
+    Tools.Rooms,
   ];
   private toolNameMap = {
-    [Tools.Pen]: 'Pen',
-    [Tools.Stroke]: 'Width',
-    [Tools.Line]: 'Line',
-    [Tools.StrokeColor]: 'Stroke',
-    [Tools.Arrow]: 'Arrow',
-    [Tools.FillColor]: 'Fill',
-    [Tools.Text]: 'Text',
-    [Tools.Math]: 'Math',
-    [Tools.Rectangle]: 'Rect',
-    [Tools.Image]: 'Image',
-    [Tools.Ellipse]: 'Ellipse',
-    [Tools.Select]: 'Select',
-    [Tools.Polygon]: 'Poly',
-    [Tools.Pan]: 'Pan',
-    [Tools.Undo]: 'Undo',
-    [Tools.Clear]: 'Clear',
-    [Tools.Redo]: 'Redo',
-    [Tools.Rooms]: 'Rooms'
+    [Tools.Pen]: "Pen",
+    [Tools.Stroke]: "Width",
+    [Tools.Line]: "Line",
+    [Tools.StrokeColor]: "Stroke",
+    [Tools.Arrow]: "Arrow",
+    [Tools.FillColor]: "Fill",
+    [Tools.Text]: "Text",
+    [Tools.Math]: "Math",
+    [Tools.Rectangle]: "Rect",
+    [Tools.Image]: "Image",
+    [Tools.Ellipse]: "Ellipse",
+    [Tools.Select]: "Select",
+    [Tools.Polygon]: "Poly",
+    [Tools.Pan]: "Pan",
+    [Tools.Undo]: "Undo",
+    [Tools.Clear]: "Clear",
+    [Tools.Redo]: "Redo",
+    [Tools.Rooms]: "Rooms",
   };
   private clipToolNameMap = {
-    [ClipTools.Cut]: 'Cut',
-    [ClipTools.Copy]: 'Copy',
-    [ClipTools.Paste]: 'Paste',
-    [ClipTools.Delete]: 'Delete'
+    [ClipTools.Cut]: "Cut",
+    [ClipTools.Copy]: "Copy",
+    [ClipTools.Paste]: "Paste",
+    [ClipTools.Delete]: "Delete",
   };
 
   @Prop({ default: false })
@@ -193,17 +211,17 @@ export default class Menu extends Vue {
   private readonly isMobile?: boolean;
 
   private created() {
-    this.potentialRoomName = this.$route.params.room || ''; 
+    this.potentialRoomName = this.$route.params.room || "";
   }
 
   private mounted() {
-    document.getElementById('imgLoader')!.onchange = (e: any) => {
+    document.getElementById("imgLoader")!.onchange = (e: any) => {
       const reader = new FileReader();
       reader.onload = (event) => {
         const imgObj = new Image();
         imgObj.src = event.target!.result as string;
         imgObj.onload = () => {
-          this.$emit('img-uploaded', imgObj);
+          this.$emit("img-uploaded", imgObj);
         };
       };
       reader.readAsDataURL(e.target.files[0]);
@@ -212,26 +230,26 @@ export default class Menu extends Vue {
 
   private clickedTool(toolName: string) {
     if (toolName === Tools.Image) {
-      document.getElementById('imgLoader')!.click();
+      document.getElementById("imgLoader")!.click();
     } else {
-      this.$emit('tool-selected', toolName);
+      this.$emit("tool-selected", toolName);
     }
   }
 
   private clickedClipTool(toolName: string) {
-    this.$emit('clip-tool-selected', toolName);
+    this.$emit("clip-tool-selected", toolName);
   }
 
   private updateColor(value: any) {
-    this.$emit('update-color', value);
+    this.$emit("update-color", value);
   }
 
   private changeStrokeWidth(value: number) {
-    this.$emit('update-stroke', value);
+    this.$emit("update-stroke", value);
   }
 
   private goToRoom() {
-    this.$emit('go-to-room', this.potentialRoomName);
+    this.$emit("go-to-room", this.potentialRoomName);
   }
 }
 </script>
@@ -254,7 +272,7 @@ export default class Menu extends Vue {
     flex-wrap: wrap;
     position: fixed;
     top: 0px;
-    left: calc((100% - 314px)/2);
+    left: calc((100% - 314px) / 2);
     width: (6 * @menu-button-size) + 14;
     z-index: 2;
 
@@ -324,61 +342,61 @@ export default class Menu extends Vue {
           }
         }
         &.rooms {
-          background-image: url('../assets/rooms.svg');
+          background-image: url("../assets/rooms.svg");
         }
         &.pen {
-          background-image: url('../assets/pen.svg');
+          background-image: url("../assets/pen.svg");
         }
         &.line {
-          background-image: url('../assets/line.svg');              
+          background-image: url("../assets/line.svg");
         }
         &.arrow {
-          background-image: url('../assets/arrow.svg');              
+          background-image: url("../assets/arrow.svg");
         }
         &.rectangle {
-          background-image: url('../assets/rectangle.svg');              
+          background-image: url("../assets/rectangle.svg");
         }
         &.ellipse {
-          background-image: url('../assets/ellipse.svg');              
+          background-image: url("../assets/ellipse.svg");
         }
         &.polygon {
-          background-image: url('../assets/polygon.svg');              
+          background-image: url("../assets/polygon.svg");
         }
         &.text {
-          background-image: url('../assets/text.svg');             
+          background-image: url("../assets/text.svg");
         }
         &.select {
-          background-image: url('../assets/select.svg');              
+          background-image: url("../assets/select.svg");
         }
         &.pan {
-          background-image: url('../assets/pan.svg');              
+          background-image: url("../assets/pan.svg");
         }
         &.clear {
-          background-image: url('../assets/clear.svg');              
+          background-image: url("../assets/clear.svg");
         }
         &.undo {
-          background-image: url('../assets/undo.svg');              
+          background-image: url("../assets/undo.svg");
         }
         &.redo {
-          background-image: url('../assets/redo.svg');              
+          background-image: url("../assets/redo.svg");
         }
         &.math {
-          background-image: url('../assets/math.svg');              
+          background-image: url("../assets/math.svg");
         }
         &.image {
-          background-image: url('../assets/image.svg');              
+          background-image: url("../assets/image.svg");
         }
         &.cut {
-          background-image: url('../assets/cut.svg');
+          background-image: url("../assets/cut.svg");
         }
         &.copy {
-          background-image: url('../assets/copy.svg');             
+          background-image: url("../assets/copy.svg");
         }
         &.paste {
-          background-image: url('../assets/paste.svg');
+          background-image: url("../assets/paste.svg");
         }
         &.delete {
-          background-image: url('../assets/delete.svg');             
+          background-image: url("../assets/delete.svg");
         }
       }
       .submenu {
@@ -398,10 +416,14 @@ export default class Menu extends Vue {
           transition: height @anim-prep-duration;
           -webkit-transition: height @anim-prep-duration;
         }
-        &.rooms, &.polygon, &.stroke-color, &.fill-color {
+        &.rooms,
+        &.polygon,
+        &.stroke-color,
+        &.fill-color {
           right: 0;
         }
-        &.stroke-color, &.fill-color {
+        &.stroke-color,
+        &.fill-color {
           height: auto;
           width: auto;
           margin: 0;
@@ -412,8 +434,9 @@ export default class Menu extends Vue {
           width: 180px;
           height: 50px;
         }
-        &.rooms, &.polygon {
-           width: 140px;
+        &.rooms,
+        &.polygon {
+          width: 140px;
           input {
             width: 80px;
           }
@@ -437,7 +460,8 @@ export default class Menu extends Vue {
             transform: translateY(0%);
             transition: transform @anim-duration @anim-prep-duration;
             -webkit-transition: transform @anim-duration @anim-prep-duration;
-            -webkit-transition: -webkit-transform @anim-duration @anim-prep-duration;
+            -webkit-transition: -webkit-transform @anim-duration
+              @anim-prep-duration;
           }
         }
       }
