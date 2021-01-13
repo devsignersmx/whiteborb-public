@@ -24,17 +24,20 @@ server.listen(port);
 
 // Database connection
 let pool;
-if (process.env.PORT) {
-  pool = new Pool({
-    connectionString: process.env.DATABASE_URL,
-    ssl: { rejectUnauthorized: false },
-  });
-} else {
-  pool = new Pool({
-    // Your local database connection info goes here!
-    // See https://node-postgres.com/ for details
-  });
-}
+// if (process.env.PORT) {
+//   pool = new Pool({
+//     connectionString: process.env.DATABASE_URL,
+//     ssl: { rejectUnauthorized: false },
+//   });
+// } else {
+pool = new Pool({
+  user: 'wb-db',
+  host: 'wb-psql',
+  database: 'wb-db',
+  password: 'tutorel.',
+  port: 5432,
+});
+// }
 
 // Socket events
 io.on('connection', (socket) => {
