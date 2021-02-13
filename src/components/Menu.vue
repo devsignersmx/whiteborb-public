@@ -272,8 +272,8 @@ export default class Menu extends Vue {
     flex-wrap: wrap;
     position: fixed;
     top: 0px;
-    left: calc((100% - 314px) / 2);
-    width: (6 * @menu-button-size) + 14;
+    left: 8%;
+    width: (18 * @menu-button-size) + 14;
     z-index: 2;
 
     .menu-text {
